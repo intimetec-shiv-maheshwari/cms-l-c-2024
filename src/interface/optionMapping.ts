@@ -1,7 +1,9 @@
 export const adminOptions = [
   "Add Menu Item",
-  "Update Menu Item",
-  "Delete Menu Item",
+  "Update Item Price",
+  "Update Item Availibility Status",
+  "Delete Item",
+  "View Menu"
 ];
 
 export const chefOptions = [

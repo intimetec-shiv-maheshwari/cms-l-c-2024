@@ -1,5 +1,5 @@
 import { FieldPacket, RowDataPacket } from "mysql2";
-import { Admin } from "../controller/AdminController";
+import { Admin } from "../controller/adminController";
 import { Chef } from "../controller/chefController";
 import { Employee } from "../controller/employeeController";
 import { User } from "../controller/userController";
@@ -13,7 +13,11 @@ class AuthService {
     const values = [userId, password];
     const query = "SELECT * FROM t_user WHERE userId = ? and password = ?";
     try {
-      const [result]: [RowDataPacket[] , FieldPacket[]] = await pool.query(query, values);
+      const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
+        query,
+        values
+      );
+      console.log(result.length);
       if (result.length > 0) {
         const userData = result[0];
         let userRole: string, role: Role;
@@ -36,11 +40,12 @@ class AuthService {
             userData.id,
             userData.name,
             userData.userId,
+            userRole,
             role
           );
           return user;
         } else {
-          return "Invalid userId or password";
+          return { success: false, message: "Invalid userId or password" };
         }
       }
     } catch (err) {

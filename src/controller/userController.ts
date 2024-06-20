@@ -5,6 +5,7 @@ export class User {
     public id: string,
     public name: string,
     public userId: string,
+    public roleName: string,
     private role: Role
   ) {}
 
@@ -12,10 +13,11 @@ export class User {
     return this.role.getOptions();
   }
 
-  executeOption(option: number) {
+  async executeOption(option: number, requestPayload?: any) {
     const optionFunction = this.role.getOptionFunction(option);
     if (optionFunction) {
-      optionFunction.call(this.role);
+      const response = await optionFunction.call(this.role, requestPayload);
+      return response;
     } else {
       console.log(`No function found for option: ${option}`);
     }

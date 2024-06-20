@@ -1,6 +1,6 @@
 export interface Role{
     getOptions(): string[];
-    getOptionFunction(option: number): () => void;
+    getOptionFunction(option: number): (requestPayload: any) => void;
 }
 
 export interface UserCredentials{
