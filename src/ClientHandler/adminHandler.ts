@@ -9,7 +9,10 @@ import { Socket } from "socket.io-client";
 // });
 let menu: any;
 export class AdminHandler {
-  constructor() {}
+    socket :Socket
+  constructor(socket : Socket) {
+    this.socket = socket
+  }
   async inputNewItemDetails() {
     console.log("The Meal Types are as follows : ");
     console.log(mealType);
