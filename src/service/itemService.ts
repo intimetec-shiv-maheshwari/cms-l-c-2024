@@ -1,14 +1,11 @@
 import { Item } from "../interface/Menu";
 import pool from "../repository/databaseConnector";
 import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
+import itemRepository from "../repository/itemRepository";
 class ItemService {
   async addNewItem(item: Item) {
-    const { categoryId, name, price, availabilityStatus } = item;
-    const values = [name, price, availabilityStatus, categoryId];
-    const query =
-      "INSERT INTO t_menu_item (name, price, availabilityStatus,categoryId) VALUES (?, ?, ?, ?)";
     try {
-      const result = await pool.query<ResultSetHeader>(query, values);
+      const result = await itemRepository.addNewItem(item);
       return {
         sucess: true,
         message: "Item Added Successfully!",
@@ -20,11 +17,8 @@ class ItemService {
   }
 
   async updateItemPrice(item: Item) {
-    const { name, price } = item;
-    const values = [price, name];
-    const query = "UPDATE t_menu_item SET price = ? WHERE name = ?";
     try {
-      const result = await pool.query(query, values);
+      const result = await itemRepository.updatePrice(item);
       return {
         success: true,
         message: "Item Added Successfully!",
@@ -40,12 +34,8 @@ class ItemService {
   }
 
   async updateItemAvailibilityStatus(item: Item) {
-    const { name, availabilityStatus } = item;
-    const values = [availabilityStatus, name];
-    const query =
-      "UPDATE t_menu_item SET availabilityStatus = ? WHERE name = ?";
     try {
-      const result = await pool.query(query, values);
+      const result = await itemRepository.updateAvailibilityStatus(item);
       return {
         success: true,
         message: "Availability Status Successfully!",
@@ -61,11 +51,8 @@ class ItemService {
   }
 
   async deleteItem(itemName: Item) {
-    const { name } = itemName;
-    const values = [name];
-    const query = "DELETE FROM t_menu_item WHERE name = ?";
     try {
-      const result = await pool.query(query, values);
+      const result = await itemRepository.deleteItem(itemName);
       return {
         success: true,
         message: "Item Deleted Successfully!",
@@ -81,22 +68,9 @@ class ItemService {
   }
 
   async viewMenu() {
-    const query = `SELECT 
-      t_menu_item.id AS \`S.No\`,
-      t_menu_item.name AS Item, 
-      t_menu_item.price AS Price, 
-      t_menu_item.availabilityStatus AS AvailabilityStatus, 
-      t_category.category AS Category
-    FROM 
-      t_menu_item
-    INNER JOIN 
-      t_category 
-    ON 
-      t_menu_item.categoryId = t_category.id`;
-
     try {
-      const result: [RowDataPacket[], FieldPacket[]] = await pool.query(query);
-      return { success: true, response: result[0], type: "Item" };
+      const result = await itemRepository.viewMenu();
+      return { success: true, response: result, type: "Item" };
     } catch (error) {
       console.log(error);
     }

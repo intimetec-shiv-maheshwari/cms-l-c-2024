@@ -7,6 +7,10 @@ import roleService from "./src/service/roleService";
 import { User } from "./src/controller/userController";
 // import { socket } from "./client";
 import itemService from "./src/service/itemService";
+import { Role } from "./src/interface/User";
+import { Admin } from "./src/controller/adminController";
+import { Chef } from "./src/controller/chefController";
+import { Employee } from "./src/controller/employeeController";
 
 // Create a connection pool
 const pool = mysql.createPool({
@@ -25,18 +29,17 @@ const httpServer = createServer(app);
 // Initialize Socket.io server
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Allow all origins for development
+    origin: "*",
+    methods: ["GET", "POST"], // Allow all origins for development
   },
 });
+let noOfClients = 0;
 
-// Handle client connections
 io.on("connection", (socket: Socket) => {
-  console.log("Client connected");
+  console.log("Client connected : ");
   io.emit("notification", "A new client has connected: " + socket.id);
-  // Handle incoming messages from clients
   socket.on("message", (data) => {
     console.log(`Received from client: ${data}`);
-    // Send a response back to the client
     socket.emit("message", `Server received: ${data}`);
   });
 
@@ -56,6 +59,7 @@ io.on("connection", (socket: Socket) => {
       socket.on("Option selection", async (request) => {
         let response: any;
         if (request.payload) {
+          console.log("here");
           response = await user.executeOption(
             request.selectedOption,
             request.payload
@@ -63,7 +67,6 @@ io.on("connection", (socket: Socket) => {
           socket.emit("Option Selection", response);
         } else {
           response = await user.executeOption(request.selectedOption);
-          console.log(response);
           socket.emit("Option Selection", response);
         }
       });
@@ -72,19 +75,11 @@ io.on("connection", (socket: Socket) => {
     }
   });
 
-  // socket.on("Get Role", async (user) => {
-  //   const values = [user.roleId];
-  //   const userRole = await pool.query(
-  //     "Select role from t_role where id = ?",
-  //     values
-  //   );
-  //   console.log(userRole);
-  // });
-
-  // socket.on("View Menu", async () => {
-  //   const menu = await itemService.viewMenu();
-  //   socket.emit("");
-  // });
+  socket.on("Menu For Recommendation", async () => {
+    const menu = await itemService.viewMenu();
+    console.log(menu);
+    socket.emit("Menu For Recommendation", menu);
+  });
 });
 
 // Start the server

@@ -50,14 +50,14 @@ class Client {
   }
 
   async promptOptionSelection(optionsLength: number, userRole: string) {
-    const option = await getInput("Please select a option : ");
+    const option = await getInput("Please select a option: ");
     if (option === Constants.EXIT) {
       exit();
     } else {
       const selectedOption = parseInt(option, 10);
       if (selectedOption <= 0 || selectedOption > optionsLength) {
         console.log("Please select a valid option!");
-        this.promptOptionSelection(optionsLength, userRole);
+        await this.promptOptionSelection(optionsLength, userRole);
       } else {
         const payload = await this.handleRoleInputs(userRole, selectedOption);
         console.log("payload", payload);
@@ -67,21 +67,25 @@ class Client {
   }
 
   async handleRoleInputs(role: string, option: number) {
-    let user;
-    let requestPayload: void | undefined;
+    let user: AdminHandler | ChefHandler;
     const nonPromptingOptions: { [key: string]: number[] } = {
       admin: [5],
-      chef: [1, 2],
-      employee: [1, 2],
+      chef: [],
+      employee: [],
     };
 
     switch (role) {
       case "admin":
-        user = new AdminHandler();
+        user = new AdminHandler(socket);
+        break;
       case "chef":
-      // user = new ChefHandler();
+        user = new ChefHandler(socket);
+        break;
       case "employee":
-      //  user = new EmployeeHandler();
+        // user = new EmployeeHandler();
+        break;
+      default:
+        throw new Error(`Unsupported role: ${role}`);
     }
     if (
       nonPromptingOptions[role] &&
@@ -90,7 +94,10 @@ class Client {
       console.log("here");
       return null;
     } else {
-      requestPayload = await user?.getOptionFunction(option).call(user);
+      const requestPayload = await new Promise<any>(async (resolve) => {
+        const payload = await user?.getOptionFunction(option).call(user);
+        resolve(payload);
+      });
       return requestPayload;
     }
   }
@@ -149,6 +156,7 @@ socket.on("Authenticate", (result: any) => {
   }
 });
 socket.on("Option Selection", (response: any) => {
+
   if (response.type === "message") {
     console.log(response.message);
   } else if (response.type === "Item") {
