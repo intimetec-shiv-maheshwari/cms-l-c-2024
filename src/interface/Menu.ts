@@ -1,4 +1,4 @@
-export const mealType = {
+export const categoryType = {
   1: "Breakfast",
   2: "Cereals",
   3: "Vegetable",
@@ -7,6 +7,11 @@ export const mealType = {
   6: "Miscellaneous",
 };
 
+export const mealType = {
+  breakfast: 1,
+  lunch: 2,
+  dinner: 3,
+};
 export interface Item {
   name?: string;
   price?: number;

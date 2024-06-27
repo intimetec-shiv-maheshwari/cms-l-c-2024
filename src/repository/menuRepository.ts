@@ -1,5 +1,7 @@
-import { RowDataPacket } from "mysql2";
+import { FieldPacket, RowDataPacket } from "mysql2";
 import pool from "./databaseConnector";
+import { query } from "express";
+import { error } from "console";
 
 class MenuRepository {
   async getMealTypes() {
@@ -29,6 +31,78 @@ class MenuRepository {
       return existingItem.length;
     } catch (error) {
       throw new Error(`Item ID ${itemId} already exists in another meal type`);
+    }
+  }
+
+  async getRecommendedMeal() {
+    try {
+      const query =
+        "select t_menu_item.id as id ,t_meal_type.id as mealTypeId, t_menu_item.name as Name,t_meal_type.mealType as Mealtype from t_menu_item INNER JOIN t_recommendation ON t_recommendation.itemId = t_menu_item.id INNER JOIN t_meal_type ON t_recommendation.mealTypeId = t_meal_type.id";
+      const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
+        query
+      );
+      return result;
+    } catch (error) {
+      throw new Error("There was some problem in fetching the result");
+    }
+  }
+
+  async checkForExistingVote(userId: string) {
+    try {
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await pool.query(
+        `SELECT COUNT(*) AS vote_count FROM t_voting_record WHERE userId = ? AND dateOfVote = CURDATE()`,
+        [userId]
+      );
+
+      if (rows[0].vote_count > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.error("Error checking vote record:", err);
+      throw err;
+    }
+  }
+
+  async increaseVote(mealTypeId: number, itemId: number) {
+    try {
+      const values = [itemId, mealTypeId];
+      const query =
+        "UPDATE t_recommendation SET noOfVotes = noOfVotes + 1 WHERE itemId = ? AND mealTypeId = ?";
+      const [result] = await pool.query(query, values);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async insertVotingRecord(userId: string) {
+    try {
+      await pool.query("CALL insertVotingRecord(?)", [userId]);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getRecommendedMealStatus() {
+    try {
+      const query =
+        "select t_menu_item.id as ItemId , t_menu_item.name as ItemName, t_meal_type.mealType as Mealtype, t_recommendation.noOfVotes as Votes from t_recommendation INNER JOIN t_menu_item ON t_recommendation.itemId = t_menu_item.id INNER JOIN t_meal_type ON t_recommendation.mealTypeId = t_meal_type.id";
+      const [result] = await pool.query(query);
+      return result;
+    } catch (errror) {
+      throw error;
+    }
+  }
+
+  async insertItemForFinalMenu(itemId: number, mealTypeId: number) {
+    try {
+      const query =
+        "INSERT INTO t_final_menu (itemid, mealTypeId) VALUES (?, ?)";
+      await pool.query(query, [itemId, mealTypeId]);
+    } catch (error) {
+      throw error;
     }
   }
 }

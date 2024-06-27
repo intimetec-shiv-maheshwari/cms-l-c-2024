@@ -6,24 +6,41 @@ export class Chef implements Role {
     return chefOptions;
   }
 
-  viewMenu() {
-  }
+  viewMenu() {}
 
   async saveItemsForRecommendation(requestPayload: any) {
-    console.log(requestPayload)
-    const response = await menuService.saveItemsForRecommendation(requestPayload)
+    console.log(requestPayload);
+    const response = await menuService.saveItemsForRecommendation(
+      requestPayload
+    );
     return response;
   }
 
   generateFeedbackReport() {}
 
-  viewEmployeeChoices() {}
+  async savefinalisedMenu(requestPayload: any) {
+    try {
+      const response = await menuService.finaliseMenu(requestPayload);
+      return {
+        success: true,
+        message: response,
+        type: "message",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "There was an error in doing so!",
+        type: "message",
+      };
+    }
+  }
+
   getOptionFunction(option: number): () => void {
-    const optionsMap: { [key: number]: (requestPayload?:any) => void } = {
+    const optionsMap: { [key: number]: (requestPayload?: any) => void } = {
       1: this.saveItemsForRecommendation,
       2: this.viewMenu,
-      3: this.generateFeedbackReport,
-      4: this.viewEmployeeChoices,
+      3: this.savefinalisedMenu,
+      4: this.generateFeedbackReport,
     };
     return optionsMap[option];
   }

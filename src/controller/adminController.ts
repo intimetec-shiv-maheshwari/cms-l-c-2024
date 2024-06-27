@@ -12,23 +12,25 @@ export class Admin implements Role {
   async addMenuItem(requestPayload: Item) {
     console.log(requestPayload);
     const response = await itemService.addNewItem(requestPayload);
-    return response
+    return response;
   }
 
-  async updateItemPrice(requestPayload : Item) {
+  async updateItemPrice(requestPayload: Item) {
     const response = await itemService.updateItemPrice(requestPayload);
-    return response
+    return response;
   }
 
-  async updateAvailibilityStatus(requestPayload : Item) {
-    const response = await itemService.updateItemAvailibilityStatus(requestPayload);
-    return response
+  async updateAvailibilityStatus(requestPayload: Item) {
+    const response = await itemService.updateItemAvailibilityStatus(
+      requestPayload
+    );
+    return response;
   }
 
-  async deleteMenuItem(requestPayload : Item) {
-    console.log(requestPayload)
+  async deleteMenuItem(requestPayload: Item) {
+    console.log(requestPayload);
     const response = await itemService.deleteItem(requestPayload);
-    return response
+    return response;
   }
 
   async viewMenu() {

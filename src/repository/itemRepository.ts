@@ -58,7 +58,8 @@ class ItemRepository {
   }
 
   async viewMenu() {
-    const query = `SELECT 
+    const query = `SELECT
+      t_menu_item.id AS Id,
       t_menu_item.name AS Item, 
       t_menu_item.price AS Price, 
       t_menu_item.availabilityStatus AS AvailabilityStatus, 
@@ -70,7 +71,7 @@ class ItemRepository {
       t_category 
     ON 
       t_menu_item.categoryId = t_category.id
-    ORDER BY t_menu_item.averageRating DESC`;
+    ORDER BY t_category.category ASC , t_menu_item.averageRating DESC`;
     try {
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
         query
