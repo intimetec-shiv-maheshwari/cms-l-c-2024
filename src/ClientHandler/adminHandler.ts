@@ -1,4 +1,5 @@
 // import * as readline from "readline";
+import { Client } from "socket.io/dist/client";
 import { getInput } from ".";
 import { Item, mealType } from "../interface/Menu";
 // import { socket } from "../../client";
@@ -9,9 +10,9 @@ import { Socket } from "socket.io-client";
 // });
 let menu: any;
 export class AdminHandler {
-    socket :Socket
-  constructor(socket : Socket) {
-    this.socket = socket
+  socket: Socket;
+  constructor(socket: Socket) {
+    this.socket = socket;
   }
   async inputNewItemDetails() {
     console.log("The Meal Types are as follows : ");
@@ -115,4 +116,3 @@ export class AdminHandler {
     console.log(separatorLine);
   }
 }
-

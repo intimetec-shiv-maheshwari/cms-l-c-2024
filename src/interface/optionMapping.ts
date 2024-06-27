@@ -3,14 +3,18 @@ export const adminOptions = [
   "Update Item Price",
   "Update Item Availibility Status",
   "Delete Item",
-  "View Menu"
+  "View Menu",
 ];
 
 export const chefOptions = [
-  "View Menu",
   "Roll out Items for Recommendation",
+  "View Menu",
+  "Finalise Menu",
   "Generate Feedback Report",
-  "View Employee Choices",
 ];
 
-export const employeeOptions = ["Vote for Desired Meal", "Provide Feedback"];
+export const employeeOptions = [
+  "Vote for Desired Meal",
+  "Provide Feedback",
+  "View Notifications",
+];
