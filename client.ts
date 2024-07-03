@@ -94,7 +94,7 @@ class Client {
     let user: AdminHandler | ChefHandler | EmployeeHandler;
     const nonPromptingOptions: { [key: string]: number[] } = {
       admin: [5],
-      chef: [],
+      chef: [5],
       employee: [],
     };
 
@@ -127,6 +127,6 @@ class Client {
   }
 }
 
-const clientInstance = Client.getInstance()
+const clientInstance = Client.getInstance();
 console.log(clientInstance);
 export default clientInstance;

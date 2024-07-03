@@ -11,6 +11,7 @@ export const chefOptions = [
   "View Menu",
   "Finalise Menu",
   "Generate Feedback Report",
+  "View Notifications"
 ];
 
 export const employeeOptions = [

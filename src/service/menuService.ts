@@ -2,6 +2,8 @@ import { RowDataPacket } from "mysql2/promise";
 import pool from "../repository/databaseConnector";
 import menuRepository from "../repository/menuRepository";
 import { mealType } from "../interface/Menu";
+import { error } from "console";
+import notificationService from "./notificationService";
 
 class MenuService {
   async saveItemsForRecommendation(items: { [key: string]: number[] }) {
@@ -27,6 +29,14 @@ class MenuService {
           throw new Error(`Invalid meal type: ${mealType}`);
         }
       }
+      const notificationDetails = {
+        message: `Chef has rolled out Items for next day menu!`,
+        notificationType: 3,
+        receiverStatusCode: 1,
+      };
+      const notificationResult = await notificationService.saveNewNotification(
+        notificationDetails
+      );
       return {
         success: true,
         message: "Items inserted successfully",
@@ -99,6 +109,25 @@ class MenuService {
       return "Operation performed successfully!";
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getFinalMenu() {
+    try {
+      const result = await menuRepository.getPreparedMenu();
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getItemsForFeedback(userId: string) {
+    try {
+      const result = await menuRepository.fetchItemsForReview(userId);
+      console.log("in service", result);
+      return result;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

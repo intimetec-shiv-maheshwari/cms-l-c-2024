@@ -8,6 +8,7 @@ import { mealType } from "../interface/Menu";
 export class EmployeeHandler {
   socket: Socket;
   recommendedMenu: any;
+  itemsForFeedback: any;
   constructor(socket: Socket) {
     this.socket = socket;
   }
@@ -30,6 +31,18 @@ export class EmployeeHandler {
       this.socket.on("Recommended Meal", async (response) => {
         this.recommendedMenu = response.response;
         console.table(response.response);
+        resolve();
+      });
+    });
+  }
+
+  async getItemsForFeedback(userId: string) {
+    await new Promise<void>((resolve) => {
+      this.socket.emit("Get items for feedback", userId);
+      this.socket.on("Get items for feedback", async (response) => {
+        console.log("here in event", response);
+        this.itemsForFeedback = response;
+        console.table(response);
         resolve();
       });
     });
@@ -76,6 +89,25 @@ export class EmployeeHandler {
     }
   }
 
+  async provideFeedback() {
+    await this.getItemsForFeedback(client.getUserDetails().id);
+    const itemId = parseInt(await getInput("Enter itemid  : "));
+    if (this.isItemIdPresent(itemId)) {
+      const rating = parseFloat(await getInput("Enter rating : "));
+      const comment = await getInput("Enter feedback : ");
+      return {
+        userId: client.getUserDetails().id,
+        itemId: itemId,
+        rating: rating,
+        feedback: comment,
+      };
+    }
+  }
+
+  async viewNotification() {
+    return null;
+  }
+
   validateUniqueItems(items: { [key: string]: number[] }): boolean {
     const allItems = new Set<number>();
 
@@ -112,15 +144,19 @@ export class EmployeeHandler {
     return true;
   }
 
+  isItemIdPresent(itemId: number): boolean {
+    return this.itemsForFeedback.some(
+      (item: { itemid: string }) => parseInt(item.itemid) === itemId
+    );
+  }
+
   getOptionFunction(option: number): () => void {
     const optionsMap: {
       [key: number]: (requestPayload?: any) => any;
     } = {
       1: this.voteForMeal,
-      //   2: this.viewMenu,
-      //   3: this.viewEmployeeChoices,
-      //   4: this.finaliseNthDayMenu,
-      //   5: this.generateFeedbackReport,
+      2: this.provideFeedback,
+      3: this.viewNotification,
     };
     return optionsMap[option];
   }

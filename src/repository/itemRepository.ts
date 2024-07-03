@@ -57,6 +57,28 @@ class ItemRepository {
     }
   }
 
+  async updateSentimentScore(itemId: number, score: number) {
+    try {
+      const query =
+        "UPDATE t_menu_item SET sentimentScore = CASE WHEN sentimentScore IS NULL THEN ? ELSE (sentimentScore + ?) / 2 END WHERE id = ?";
+      const result = await pool.query(query, [score, score, itemId]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateAverageRating(itemId: number, rating: number) {
+    try {
+      const query =
+        "UPDATE t_menu_item SET averageRating = CASE WHEN averageRating IS NULL THEN ? ELSE (averageRating + ?) / 2 END WHERE id = ?";
+      const result = await pool.query(query, [rating, rating, itemId]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async viewMenu() {
     const query = `SELECT
       t_menu_item.id AS Id,
@@ -64,6 +86,7 @@ class ItemRepository {
       t_menu_item.price AS Price, 
       t_menu_item.availabilityStatus AS AvailabilityStatus, 
       t_menu_item.averageRating AS Rating,
+      t_menu_item.sentimentScore as SentimentScore,
       t_category.category AS Category
     FROM 
       t_menu_item
@@ -76,6 +99,7 @@ class ItemRepository {
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
         query
       );
+      console.log(result);
       return result;
     } catch (error) {
       throw error;
