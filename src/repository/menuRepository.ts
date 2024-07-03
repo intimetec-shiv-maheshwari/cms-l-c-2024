@@ -99,8 +99,30 @@ class MenuRepository {
   async insertItemForFinalMenu(itemId: number, mealTypeId: number) {
     try {
       const query =
-        "INSERT INTO t_final_menu (itemid, mealTypeId) VALUES (?, ?)";
+        "INSERT INTO t_final_menu (itemid, mealTypeId , preparationDate) VALUES (?, ? , curdate())";
       await pool.query(query, [itemId, mealTypeId]);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async fetchItemsForReview(userId: string) {
+    try {
+      const query =
+        "SELECT f.itemid , mi.name, mt.mealType FROM t_final_menu f LEFT JOIN t_feedback fb ON f.itemid = fb.itemid  AND f.preparationDate = fb.feedbackDate AND fb.userId = ? LEFT JOIN t_menu_item mi ON f.itemid = mi.id LEFT JOIN t_meal_type mt ON f.mealTypeId = mt.id WHERE fb.id IS NULL AND f.preparationDate = CURDATE()";
+
+      const [result] = await pool.query(query, [userId]);
+      console.log("in repo", result);
+      return result;
+    } catch (errror) {}
+  }
+
+  async getPreparedMenu() {
+    try {
+      const query =
+        "SELECT t_menu_item.id as ItemId , t_menu_item.name as ItemName , t_meal_type.mealType as MealType from t_final_menu INNER JOIN t_menu_item ON t_final_menu.itemid = t_menu_item.id INNER JOIN t_meal_type ON t_final_menu.mealTypeId = t_meal_type.id WHERE t_final_menu.preparationDate = curdate()";
+      const [result] = await pool.query(query);
+      return result;
     } catch (error) {
       throw error;
     }

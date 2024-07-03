@@ -62,6 +62,10 @@ export class ChefHandler {
     return null;
   }
 
+  viewNotications() {
+    return null;
+  }
+
   async getRecommendedMealStatus() {
     await new Promise<void>((resolve) => {
       this.socket.emit("Get Recommended Meal Status");
@@ -169,6 +173,7 @@ export class ChefHandler {
       2: this.viewMenu,
       3: this.getFinalMenu,
       4: this.generateFeedbackReport,
+      5: this.viewNotications,
     };
     return optionsMap[option];
   }

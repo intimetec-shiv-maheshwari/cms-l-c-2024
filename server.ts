@@ -75,6 +75,16 @@ io.on("connection", (socket: Socket) => {
     const response = await menuService.hasUserVoted(userId);
     socket.emit("Get User Vote Status", response);
   });
+
+  socket.on("Get Final Menu", async () => {
+    const response = await menuService.getFinalMenu();
+  });
+
+  socket.on("Get items for feedback", async (userId: string) => {
+    const response = await menuService.getItemsForFeedback(userId);
+    console.log("in server", response);
+    socket.emit("Get items for feedback", response);
+  });
 });
 
 // Start the server

@@ -1,6 +1,6 @@
 // main.ts
 
-import client from './client';
+import client from "./client";
 import viewResponse from "./src/utils/displayResponse";
 
 // Use the socket instance from Client
@@ -30,6 +30,7 @@ socket.on("Option Selection", (response: any) => {
     console.log(response.message);
   } else if (response.type === "Item") {
     viewResponse(response.response);
+  } else if (response.type === "list") {
+    console.log(response.message);
   }
 });
-
