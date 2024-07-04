@@ -1,4 +1,9 @@
-import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
+import {
+  FieldPacket,
+  QueryResult,
+  ResultSetHeader,
+  RowDataPacket,
+} from "mysql2";
 import { Item } from "../interface/Menu";
 import pool from "./databaseConnector";
 
@@ -18,10 +23,20 @@ class ItemRepository {
 
   async updatePrice(item: Item) {
     const { name, price } = item;
-    const values = [price, name];
-    const query = "UPDATE t_menu_item SET price = ? WHERE name = ?";
+
+    const checkResult = await this.checkItemExists(name!);
+    if (!checkResult.success) {
+      throw checkResult.message;
+    }
+
+    const updateQuery = "UPDATE t_menu_item SET price = ? WHERE name = ?";
+    const updateValues = [price, name];
+
     try {
-      const [result] = await pool.query(query, values);
+      const [result] = await pool.query<ResultSetHeader>(
+        updateQuery,
+        updateValues
+      );
       return result;
     } catch (error) {
       throw error;
@@ -30,11 +45,18 @@ class ItemRepository {
 
   async updateAvailibilityStatus(item: Item) {
     const { name, availabilityStatus } = item;
-    const values = [availabilityStatus, name];
-    const query =
+    const checkResult = await this.checkItemExists(name!);
+    if (!checkResult.success) {
+      throw checkResult.message;
+    }
+    const updateQuery =
       "UPDATE t_menu_item SET availabilityStatus = ? WHERE name = ?";
+    const updateValues = [availabilityStatus, name];
     try {
-      const [result] = await pool.query(query, values);
+      const [result] = await pool.query<ResultSetHeader>(
+        updateQuery,
+        updateValues
+      );
       return result;
     } catch (error) {
       throw error;
@@ -43,17 +65,17 @@ class ItemRepository {
 
   async deleteItem(itemName: Item) {
     const { name } = itemName;
-    const values = [name];
-    const query = "DELETE FROM t_menu_item WHERE name = ?";
+    const checkResult = await this.checkItemExists(name!);
+    if (!checkResult.success) {
+      throw checkResult.message;
+    }
+    const deleteQuery = "DELETE FROM t_menu_item WHERE name = ?";
+    const deleteValues = [name];
     try {
-      const [result] = await pool.query(query, values);
+      const [result] = await pool.query(deleteQuery, deleteValues);
       return result;
     } catch (error) {
-      return {
-        success: false,
-        message: "There was an error in doing this",
-        type: "message",
-      };
+      throw error;
     }
   }
 
@@ -103,6 +125,35 @@ class ItemRepository {
       return result;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async checkItemExists(name: string) {
+    const checkQuery =
+      "SELECT COUNT(*) AS count FROM t_menu_item WHERE name = ?";
+    const checkValues = [name];
+
+    try {
+      const [rows] = await pool.query<RowDataPacket[]>(checkQuery, checkValues);
+      const count = rows[0].count;
+      if (count === 0) {
+        return {
+          success: false,
+          message: `Item with name '${name}' does not exist.`,
+          type: "error",
+        };
+      }
+      return {
+        success: true,
+        message: `Item with name '${name}' exists.`,
+        type: "success",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "There was an error checking the item existence",
+        type: "error",
+      };
     }
   }
 }

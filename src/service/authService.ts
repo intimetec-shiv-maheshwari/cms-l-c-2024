@@ -6,18 +6,12 @@ import { User } from "../controller/userController";
 import { Role, UserCredentials } from "../interface/User";
 import pool from "../repository/databaseConnector";
 import roleService from "./roleService";
+import userRepository from "../repository/userRepository";
 
 class AuthService {
   async login(userCredentials: UserCredentials) {
-    const { userId, password } = userCredentials;
-    const values = [userId, password];
-    const query = "SELECT * FROM t_user WHERE userId = ? and password = ?";
     try {
-      const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
-        query,
-        values
-      );
-      console.log(result.length);
+      const result = await userRepository.verifyUser(userCredentials);
       if (result.length > 0) {
         const userData = result[0];
         let userRole: string, role: Role;
@@ -45,12 +39,13 @@ class AuthService {
           );
           return user;
         } else {
-          return { success: false, message: "Invalid userId or password" };
+          return { success: false, message: "Invalid Role" };
         }
+      } else {
+        return { success: false, message: "Invalid userId or password" };
       }
-    } catch (err) {
-      console.error("Error executing query", err);
-      return "Database error";
+    } catch (error) {
+      return { success: false, message: error };
     }
   }
 }

@@ -42,7 +42,6 @@ export class EmployeeHandler {
       this.socket.on("Get items for feedback", async (response) => {
         console.log("here in event", response);
         this.itemsForFeedback = response;
-        console.table(response);
         resolve();
       });
     });
@@ -54,58 +53,84 @@ export class EmployeeHandler {
     );
     if (!hasUserVoted) {
       await this.getRecommendedMeal();
-
-      const breakfastItems = [];
-      const lunchItems = [];
-      const dinnerItems = [];
-      const breakfastItemId = parseInt(
-        await getInput("Enter breakfast item Id to vote for : ")
-      );
-      breakfastItems.push(breakfastItemId);
-      const lunchItemId = parseInt(
-        await getInput("Enter the Lunch Item Id to vote for : ")
-      );
-      lunchItems.push(lunchItemId);
-      const dinnerItemId = parseInt(
-        await getInput("Enter the Dinner Item Id to vote for : ")
-      );
-      dinnerItems.push(dinnerItemId);
-      const items = {
-        breakfast: breakfastItems,
-        lunch: lunchItems,
-        dinner: dinnerItems,
-      };
-      if (this.validateUniqueItems(items) && this.verifyItems(items)) {
-        return {
-          userId: client.getUserDetails().id,
-          items,
+      if (this.recommendedMenu.length > 0) {
+        const breakfastItems = [];
+        const lunchItems = [];
+        const dinnerItems = [];
+        const breakfastItemId = parseInt(
+          await getInput("Enter breakfast item Id to vote for : ")
+        );
+        breakfastItems.push(breakfastItemId);
+        const lunchItemId = parseInt(
+          await getInput("Enter the Lunch Item Id to vote for : ")
+        );
+        lunchItems.push(lunchItemId);
+        const dinnerItemId = parseInt(
+          await getInput("Enter the Dinner Item Id to vote for : ")
+        );
+        dinnerItems.push(dinnerItemId);
+        const items = {
+          breakfast: breakfastItems,
+          lunch: lunchItems,
+          dinner: dinnerItems,
         };
+        if (this.validateUniqueItems(items) && this.verifyItems(items)) {
+          return {
+            success: true,
+            body: {
+              userId: client.getUserDetails().id,
+              items,
+            },
+          };
+        } else {
+          console.log("Please vote again!");
+          await this.voteForMeal();
+        }
       } else {
-        console.log("Please vote again!");
-        await this.voteForMeal();
+        return {
+          success: false,
+          message: "No items has been rolled out yet!",
+        };
       }
     } else {
-      console.log("You have already voted!");
+      return {
+        success: false,
+        message: "You have already voted!",
+      };
     }
   }
 
   async provideFeedback() {
     await this.getItemsForFeedback(client.getUserDetails().id);
-    const itemId = parseInt(await getInput("Enter itemid  : "));
-    if (this.isItemIdPresent(itemId)) {
-      const rating = parseFloat(await getInput("Enter rating : "));
-      const comment = await getInput("Enter feedback : ");
+    if (this.itemsForFeedback.length > 0) {
+      console.table(this.itemsForFeedback);
+      const itemId = parseInt(await getInput("Enter itemid  : "));
+      if (this.isItemIdPresent(itemId)) {
+        const rating = parseFloat(await getInput("Enter rating : "));
+        const comment = await getInput("Enter feedback : ");
+        return {
+          success: true,
+          body: {
+            userId: client.getUserDetails().id,
+            itemId: itemId,
+            rating: rating,
+            feedback: comment,
+          },
+        };
+      }
+    } else {
       return {
-        userId: client.getUserDetails().id,
-        itemId: itemId,
-        rating: rating,
-        feedback: comment,
+        success: false,
+        message: "You have completed your feedback part!",
       };
     }
   }
 
   async viewNotification() {
-    return null;
+    return {
+      success: true,
+      body: null,
+    };
   }
 
   validateUniqueItems(items: { [key: string]: number[] }): boolean {
