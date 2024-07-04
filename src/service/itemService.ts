@@ -1,6 +1,4 @@
 import { Item } from "../interface/Menu";
-import pool from "../repository/databaseConnector";
-import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
 import itemRepository from "../repository/itemRepository";
 import notificationService from "./notificationService";
 class ItemService {
@@ -30,13 +28,14 @@ class ItemService {
       const result = await itemRepository.updatePrice(item);
       return {
         success: true,
-        message: "Item Added Successfully!",
+        message: "Price Updated Successfully!",
         type: "message",
       };
     } catch (error) {
+      console.log(error);
       return {
         success: false,
-        message: "There was an error in doing this",
+        message: error,
         type: "message",
       };
     }
@@ -55,13 +54,13 @@ class ItemService {
       );
       return {
         success: true,
-        message: "Availability Status Successfully!",
+        message: "Availability Status Changed Successfully !",
         type: "message",
       };
     } catch (error) {
       return {
         success: false,
-        message: "There was an error in doing this",
+        message: error,
         type: "message",
       };
     }
@@ -78,7 +77,7 @@ class ItemService {
     } catch (error) {
       return {
         success: false,
-        message: "There was an error in doing this",
+        message: error,
         type: "message",
       };
     }

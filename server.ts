@@ -40,10 +40,10 @@ io.on("connection", (socket: Socket) => {
       });
       socket.on("Option selection", async (request) => {
         let response: any;
-        if (request.payload) {
+        if (request.payload.body) {
           response = await user.executeOption(
             request.selectedOption,
-            request.payload
+            request.payload.body
           );
           socket.emit("Option Selection", response);
         } else {
@@ -84,6 +84,16 @@ io.on("connection", (socket: Socket) => {
     const response = await menuService.getItemsForFeedback(userId);
     console.log("in server", response);
     socket.emit("Get items for feedback", response);
+  });
+
+  socket.on("Get Recommendation Status", async () => {
+    const response = await menuService.checkRecommendationStatus();
+    socket.emit("Get Recommendation Status", response);
+  });
+
+  socket.on("Check Menu Finalized", async () => {
+    const response = await menuService.isMenuFinalized();
+    socket.emit("Check Menu Finalized", response);
   });
 });
 

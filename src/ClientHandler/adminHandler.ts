@@ -1,14 +1,7 @@
 // import * as readline from "readline";
-import { Client } from "socket.io/dist/client";
 import { getInput } from ".";
 import { Item, mealType } from "../interface/Menu";
-// import { socket } from "../../client";
 import { Socket } from "socket.io-client";
-// let r = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
-let menu: any;
 export class AdminHandler {
   socket: Socket;
   constructor(socket: Socket) {
@@ -24,19 +17,25 @@ export class AdminHandler {
       "Enter availibility status (0 -> False / 1 -> True): "
     );
     return {
-      categoryId: parseInt(categoryId),
-      name: itemName,
-      price: parseInt(price),
-      availabilityStatus: parseInt(isAvailable),
+      success: true,
+      body: {
+        categoryId: parseInt(categoryId),
+        name: itemName,
+        price: parseInt(price),
+        availabilityStatus: parseInt(isAvailable),
+      },
     };
   }
 
   async updatePrice(socket: Socket) {
-    const itemName = await getInput("Enter item id to update price : ");
+    const itemName = await getInput("Enter item name to update price : ");
     const newPrice = await getInput("Enter New Price : ");
     return {
-      name: itemName,
-      price: newPrice,
+      success: true,
+      body: {
+        name: itemName,
+        price: newPrice,
+      },
     };
   }
 
@@ -46,20 +45,29 @@ export class AdminHandler {
     );
     const status = await getInput("Enter Status : ");
     return {
-      name: itemName,
-      availabilityStatus: status,
+      success: true,
+      body: {
+        name: itemName,
+        availabilityStatus: status,
+      },
     };
   }
 
   async deleteItem() {
     const itemName = await getInput("Enter item name to delete : ");
     return {
-      name: itemName,
+      success: true,
+      body: {
+        name: itemName,
+      },
     };
   }
 
   async viewMenu() {
-    return null;
+    return {
+      success: true,
+      body: null,
+    };
   }
 
   getOptionFunction(option: number): () => void {

@@ -15,7 +15,8 @@ class Client {
   private socket: Socket;
   private id: string = "";
   private name: string = "";
-
+  private role: string = "";
+  private userOptions: string[] = [];
   private constructor() {
     this.socket = io(SERVER_URL);
     this.socket.on("connect", () => {
@@ -61,16 +62,32 @@ class Client {
     this.socket.emit("Authenticate", userCredentials);
   }
 
-  setUserDetails(newDetails: { id: string; name: string }) {
+  setUserDetails(newDetails: { id: string; name: string; roleName: string }) {
     this.id = newDetails.id;
     this.name = newDetails.name;
+    this.role = newDetails.roleName;
   }
 
   getUserDetails() {
     return {
       id: this.id,
       name: this.name,
+      role: this.role,
     };
+  }
+
+  setUserOptions(userOptions: string[]) {
+    this.userOptions = userOptions;
+  }
+
+  getUserOptions() {
+    return this.userOptions;
+  }
+
+  async displayUserOptions(options: string | any[]) {
+    for (let i = 0; i < options.length; i++) {
+      console.log(`${i + 1}. ${options[i]}`);
+    }
   }
 
   async promptOptionSelection(optionsLength: number, userRole: string) {
@@ -84,8 +101,16 @@ class Client {
         await this.promptOptionSelection(optionsLength, userRole);
       } else {
         const payload = await this.handleRoleInputs(userRole, selectedOption);
-        console.log("payload", payload);
-        this.socket.emit("Option selection", { selectedOption, payload });
+        if (payload.success) {
+          this.socket.emit("Option selection", { selectedOption, payload });
+        } else {
+          console.log(payload.message);
+          await this.displayUserOptions(this.getUserOptions());
+          await this.promptOptionSelection(
+            this.getUserOptions().length,
+            this.role
+          );
+        }
       }
     }
   }
@@ -111,19 +136,11 @@ class Client {
       default:
         throw new Error(`Unsupported role: ${role}`);
     }
-
-    if (
-      nonPromptingOptions[role] &&
-      nonPromptingOptions[role].includes(option)
-    ) {
-      return null;
-    } else {
-      const requestPayload = await new Promise<any>(async (resolve) => {
-        const payload = await user?.getOptionFunction(option).call(user);
-        resolve(payload);
-      });
-      return requestPayload;
-    }
+    const requestPayload = await new Promise<any>(async (resolve) => {
+      const payload = await user?.getOptionFunction(option).call(user);
+      resolve(payload);
+    });
+    return requestPayload;
   }
 }
 

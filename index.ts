@@ -3,29 +3,26 @@
 import client from "./client";
 import viewResponse from "./src/utils/displayResponse";
 
-// Use the socket instance from Client
 const socket = client.getSocket();
-
-socket.on("notification", (message: string) => {
-  console.log("Notification from server: " + message);
-});
-
+let userOptions: string | any[] = [];
 socket.on("Authenticate", (result: any) => {
-  console.log("Authenticate event received:", result);
-
   if (result.success) {
     client.setUserDetails(result.user);
-    for (let i = 0; i < result.options.length; i++) {
-      console.log(`${i + 1}. ${result.options[i]}`);
-    }
+    client.setUserOptions(result.options);
+    client.displayUserOptions(client.getUserOptions());
     const optionsLength = parseInt(result.options.length, 10);
-    client.promptOptionSelection(optionsLength, result.user.roleName);
+    client.promptOptionSelection(optionsLength, client.getUserDetails().role);
   } else {
-    console.log("Authentication failed:", result.message);
+    console.log(
+      "Authentication failed:",
+      result.message,
+      "Please Login Again!"
+    );
+    client.promptUserId();
   }
 });
 
-socket.on("Option Selection", (response: any) => {
+socket.on("Option Selection", async (response: any) => {
   if (response.type === "message") {
     console.log(response.message);
   } else if (response.type === "Item") {
@@ -33,4 +30,9 @@ socket.on("Option Selection", (response: any) => {
   } else if (response.type === "list") {
     console.log(response.message);
   }
+  await client.displayUserOptions(client.getUserOptions());
+  await client.promptOptionSelection(
+    client.getUserOptions().length,
+    client.getUserDetails().role
+  );
 });

@@ -130,6 +130,50 @@ class MenuService {
       console.log(error);
     }
   }
+
+  async checkRecommendationStatus() {
+    try {
+      const result = await menuRepository.checkRecommendationStatus();
+      if (result.length === 0) {
+        return {
+          success: true,
+          message: "Please select items from the below menu",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Items has been rolled out already!",
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error,
+      };
+    }
+  }
+
+  async isMenuFinalized() {
+    try {
+      const result = await menuRepository.isMenuFinalized();
+      if (result.length === 0) {
+        return {
+          success: true,
+          message: "Please select items from the below menu",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Items has been already finalised!",
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error,
+      };
+    }
+  }
 }
 
 const menuService = new MenuService();

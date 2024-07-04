@@ -1,16 +1,14 @@
 import pool from "../repository/databaseConnector";
+import userRepository from "../repository/userRepository";
 
 class RoleService {
-//   role: string;
-
   async getRole(roleId: string) {
-    const values = [roleId];
-    const [userRole] : any= await pool.query(
-      "Select role from t_role where id = ?",
-      values
-    );
-    console.log(userRole)
-    return userRole[0].role;
+    try {
+      const role = await userRepository.getUserRole(roleId);
+      return role;
+    } catch (error) {
+      return error;
+    }
   }
 }
 

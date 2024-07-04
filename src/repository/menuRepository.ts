@@ -37,7 +37,7 @@ class MenuRepository {
   async getRecommendedMeal() {
     try {
       const query =
-        "select t_menu_item.id as id ,t_meal_type.id as mealTypeId, t_menu_item.name as Name,t_meal_type.mealType as Mealtype from t_menu_item INNER JOIN t_recommendation ON t_recommendation.itemId = t_menu_item.id INNER JOIN t_meal_type ON t_recommendation.mealTypeId = t_meal_type.id";
+        "select t_menu_item.id as id ,t_meal_type.id as mealTypeId, t_menu_item.name as Name,t_meal_type.mealType as Mealtype from t_menu_item INNER JOIN t_recommendation ON t_recommendation.itemId = t_menu_item.id INNER JOIN t_meal_type ON t_recommendation.mealTypeId = t_meal_type.id where t_recommendation.dateOfRecommendation = current_date()";
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
         query
       );
@@ -99,7 +99,7 @@ class MenuRepository {
   async insertItemForFinalMenu(itemId: number, mealTypeId: number) {
     try {
       const query =
-        "INSERT INTO t_final_menu (itemid, mealTypeId , preparationDate) VALUES (?, ? , curdate())";
+        "INSERT INTO t_final_menu (itemid, mealTypeId , preparationDate) VALUES (?, ? , curdate() + 1)";
       await pool.query(query, [itemId, mealTypeId]);
     } catch (error) {
       throw error;
@@ -122,6 +122,32 @@ class MenuRepository {
       const query =
         "SELECT t_menu_item.id as ItemId , t_menu_item.name as ItemName , t_meal_type.mealType as MealType from t_final_menu INNER JOIN t_menu_item ON t_final_menu.itemid = t_menu_item.id INNER JOIN t_meal_type ON t_final_menu.mealTypeId = t_meal_type.id WHERE t_final_menu.preparationDate = curdate()";
       const [result] = await pool.query(query);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async checkRecommendationStatus() {
+    try {
+      const query =
+        "select * from t_recommendation where dateOfRecommendation = current_date()";
+      const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
+        query
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async isMenuFinalized() {
+    try {
+      const query =
+        "select * from t_final_menu where preparationDate = current_date() + 1;";
+      const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
+        query
+      );
       return result;
     } catch (error) {
       throw error;

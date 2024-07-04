@@ -2,7 +2,6 @@ import { Item } from "../interface/Menu";
 import { Role } from "../interface/User";
 import { adminOptions } from "../interface/optionMapping";
 import itemService from "../service/itemService";
-// import { adminOptions } from '../mappings/adminOptions';
 
 export class Admin implements Role {
   getOptions(): string[] {
@@ -10,7 +9,6 @@ export class Admin implements Role {
   }
 
   async addMenuItem(requestPayload: Item) {
-    console.log(requestPayload);
     const response = await itemService.addNewItem(requestPayload);
     return response;
   }
