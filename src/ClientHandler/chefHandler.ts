@@ -2,11 +2,13 @@ import { Socket } from "socket.io-client";
 import { getInput } from ".";
 import viewResponse from "../utils/displayResponse";
 import { mealType } from "../interface/Menu";
+import client from "../../client";
 
 export class ChefHandler {
   socket: Socket;
   recommendedMenu: any;
   menuItems: any;
+  lowRatingItems: any;
   constructor(socket: Socket) {
     this.socket = socket;
   }
@@ -40,6 +42,17 @@ export class ChefHandler {
       );
     });
     return recommendationStatus;
+  }
+
+  async showLowRatingItems() {
+    await new Promise<void>((resolve) => {
+      this.socket.emit("View Low Rating Items");
+      this.socket.on("View Low Rating Items", async (response) => {
+        this.lowRatingItems = response;
+        console.table(this.lowRatingItems);
+        resolve();
+      });
+    });
   }
 
   async isMenuFinalized(): Promise<{
@@ -167,7 +180,87 @@ export class ChefHandler {
     }
   }
 
+  async viewDiscardMenuItemList() {
+    let itemId;
+    await this.showLowRatingItems();
+    console.log("Choose from below options : ");
+    console.log("1. Discard a menu item");
+    console.log("2. Ask for detailed feedback for a item");
+    const option = parseInt(await getInput("Enter your choice : "));
+    if (option === 1) {
+      if (await this.checkIfAlreadyUsed(option)) {
+        itemId = await this.discardMenuItem();
+      } else {
+        return {
+          success: false,
+          message: "You have used it already!",
+        };
+      }
+    } else if (option === 2) {
+      if (await this.checkIfAlreadyUsed(option)) {
+        itemId = await this.askForDetailedFeedback();
+      } else {
+        return {
+          success: false,
+          message: "You have used it already!",
+        };
+      }
+    } else {
+      console.log("Enter a valid option!");
+      await this.viewDiscardMenuItemList();
+    }
+    return {
+      success: true,
+      body: {
+        selectedOption: option,
+        itemId: itemId,
+        userId: client.getUserDetails().id,
+      },
+    };
+  }
+
+  async checkIfAlreadyUsed(selectedOption: number) {
+    let isUsed: boolean = false;
+    await new Promise<void>((resolve) => {
+      this.socket.emit("Check for usage history", selectedOption);
+      this.socket.on("Check for usage history", async (response) => {
+        console.log(response);
+        isUsed = response.result;
+        resolve();
+      });
+    });
+    return isUsed;
+  }
+
   generateFeedbackReport() {}
+
+  async discardMenuItem() {
+    const itemId = parseInt(await getInput("Enter item Id to discard : "));
+    if (this.isItemIdPresent(itemId)) {
+      return itemId;
+    } else {
+      console.log("Please enter a valid item Id");
+      await this.discardMenuItem();
+    }
+  }
+
+  async askForDetailedFeedback() {
+    const itemId = parseInt(
+      await getInput("Enter item Id to move into detailed feedback list : ")
+    );
+    if (this.isItemIdPresent(itemId)) {
+      return itemId;
+    } else {
+      console.log("Please enter a valid item Id");
+      await this.askForDetailedFeedback();
+    }
+  }
+
+  isItemIdPresent(itemId: number) {
+    return this.lowRatingItems.some(
+      (item: { id: string }) => parseInt(item.id) === itemId
+    );
+  }
 
   validateUniqueItems(items: { [key: string]: number[] }): boolean {
     const allItems = new Set<number>();
@@ -257,6 +350,7 @@ export class ChefHandler {
       3: this.getFinalMenu,
       4: this.generateFeedbackReport,
       5: this.viewNotications,
+      6: this.viewDiscardMenuItemList,
     };
     return optionsMap[option];
   }

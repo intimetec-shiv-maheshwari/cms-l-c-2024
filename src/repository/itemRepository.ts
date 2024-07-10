@@ -156,6 +156,16 @@ class ItemRepository {
       };
     }
   }
+
+  async deleteItemById(itemId: number) {
+    try {
+      const query = "DELETE FROM t_menu_item WHERE id = ?";
+      const response = await pool.query(query, [itemId]);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 const itemRepository = new ItemRepository();

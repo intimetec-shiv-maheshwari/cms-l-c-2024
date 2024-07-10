@@ -131,6 +131,15 @@ class MenuService {
     }
   }
 
+  async getLowRatingItems() {
+    try {
+      const result = await menuRepository.getLowRatingItems();
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async checkRecommendationStatus() {
     try {
       const result = await menuRepository.checkRecommendationStatus();

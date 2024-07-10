@@ -109,6 +109,15 @@ class ItemService {
       throw error;
     }
   }
+
+  async deleteItemById(itemId: number) {
+    try {
+      const result = await itemRepository.deleteItemById(itemId);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 const itemService = new ItemService();
