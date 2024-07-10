@@ -1,5 +1,6 @@
 import { Role } from "../interface/User";
 import { chefOptions } from "../interface/optionMapping";
+import discardService from "../service/discardService";
 import itemService from "../service/itemService";
 import menuService from "../service/menuService";
 import notificationService from "../service/notificationService";
@@ -60,6 +61,37 @@ export class Chef implements Role {
     }
   }
 
+  async viewDiscardMenuItemList(requestPayload: {
+    selectedOption: number;
+    itemId: number;
+    userId: string;
+  }) {
+    try {
+      if (requestPayload.selectedOption === 1) {
+        const result = await itemService.deleteItemById(requestPayload.itemId);
+      } else if (requestPayload.selectedOption === 2) {
+        const result = await discardService.insertDiscardFeedbackItem(
+          requestPayload.itemId
+        );
+      }
+      const usageLog = await discardService.insertUsageLog(
+        requestPayload.selectedOption,
+        requestPayload.userId
+      );
+      return {
+        success: true,
+        message: "Operation Done Successfully!",
+        type: "message",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error,
+        type: "message",
+      };
+    }
+  }
+
   getOptionFunction(option: number): () => void {
     const optionsMap: { [key: number]: (requestPayload?: any) => void } = {
       1: this.saveItemsForRecommendation,
@@ -67,6 +99,7 @@ export class Chef implements Role {
       3: this.savefinalisedMenu,
       4: this.generateFeedbackReport,
       5: this.viewNotifications,
+      6: this.viewDiscardMenuItemList,
     };
     return optionsMap[option];
   }

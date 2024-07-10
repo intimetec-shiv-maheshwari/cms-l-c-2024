@@ -1,6 +1,7 @@
 import sentimentAnalysis from "../SentimentAnalysis/sentimentAnalysis";
 import { Role } from "../interface/User";
 import { employeeOptions } from "../interface/optionMapping";
+import discardService from "../service/discardService";
 import feedbackService from "../service/feedbackService";
 import itemService from "../service/itemService";
 import menuService from "../service/menuService";
@@ -76,11 +77,45 @@ export class Employee implements Role {
     }
   }
 
+  async saveDetailedFeedback(requestPayload: {
+    userId: string;
+    itemId: any;
+    likes: any;
+    dislikes: any;
+    momsRecipe: any;
+  }) {
+    try {
+      const { itemId, likes, dislikes, momsRecipe, userId } = requestPayload;
+      const feedbackDetails = {
+        itemId: itemId,
+        likes: likes,
+        dislikes: dislikes,
+        momsRecipe: momsRecipe,
+      };
+      const response = await discardService.saveDetailedFeedbackForDiscardItem(
+        feedbackDetails
+      );
+      const usageLog = await discardService.insertUsageLogForEmployee(userId);
+      return {
+        success: true,
+        message: "Operaion Done Successfully!",
+        type: "message",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error,
+        type: "message",
+      };
+    }
+  }
+
   getOptionFunction(option: number): () => void {
     const optionsMap: { [key: number]: (requestPayload?: any) => void } = {
       1: this.voteForDesiredMeal,
       2: this.saveFeedback,
-      3: this.viewNotification,
+      3: this.saveDetailedFeedback,
+      4: this.viewNotification,
     };
     return optionsMap[option];
   }

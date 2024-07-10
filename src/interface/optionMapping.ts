@@ -4,6 +4,7 @@ export const adminOptions = [
   "Update Item Availibility Status",
   "Delete Item",
   "View Menu",
+  "View Discard Menu Item List",
 ];
 
 export const chefOptions = [
@@ -11,11 +12,13 @@ export const chefOptions = [
   "View Menu",
   "Finalise Menu",
   "Generate Feedback Report",
-  "View Notifications"
+  "View Notifications",
+  "View Discard Menu Item List",
 ];
 
 export const employeeOptions = [
   "Vote for Desired Meal",
   "Provide Feedback",
+  "Give Detailed Feedback",
   "View Notifications",
 ];

@@ -6,6 +6,7 @@ import { User } from "./src/controller/userController";
 
 import itemService from "./src/service/itemService";
 import menuService from "./src/service/menuService";
+import discardService from "./src/service/discardService";
 
 const app = express();
 const httpServer = createServer(app);
@@ -94,6 +95,30 @@ io.on("connection", (socket: Socket) => {
   socket.on("Check Menu Finalized", async () => {
     const response = await menuService.isMenuFinalized();
     socket.emit("Check Menu Finalized", response);
+  });
+
+  socket.on("View Low Rating Items", async () => {
+    const response = await menuService.getLowRatingItems();
+    socket.emit("View Low Rating Items", response);
+  });
+
+  socket.on("Check for usage history", async (selectedOption: number) => {
+    const response = await discardService.checkForUsageHistory(selectedOption);
+    socket.emit("Check for usage history", response);
+  });
+
+  socket.on(
+    "Check User already provided detailed feedback",
+    async (userId: string) => {
+      const response = await discardService.checkForUserHistory(userId);
+      socket.emit("Check User already provided detailed feedback", response);
+    }
+  );
+
+  socket.on("Get Discard Item List", async () => {
+    const response = await discardService.showDiscardItemList();
+    console.log(response);
+    socket.emit("Get Discard Item List", response);
   });
 });
 

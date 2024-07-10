@@ -25,7 +25,7 @@ class NotificationRepository {
   async getNotifications(receiverStatusCode: number) {
     try {
       const query =
-        "SELECT message FROM t_notification WHERE receiverStatusCode = ? OR receiverStatusCode = '3' AND ((notificationType IN (1, 2)) OR (notificationType = 3 AND createDate = CURRENT_DATE))";
+        "SELECT message FROM t_notification WHERE receiverStatusCode = ? OR receiverStatusCode = '3' AND ((notificationType IN (1, 2 ,4)) OR (notificationType = 3 AND createDate = CURRENT_DATE))";
       const [result] = await pool.query(query, [receiverStatusCode]);
       return result;
     } catch (error) {

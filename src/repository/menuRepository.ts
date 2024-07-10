@@ -148,6 +148,17 @@ class MenuRepository {
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
         query
       );
+      return result[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getLowRatingItems() {
+    try {
+      const query =
+        "select id , name from t_menu_item where averageRating < 2 and sentimentScore < 3.5";
+      const [result] = await pool.query(query);
       return result;
     } catch (error) {
       throw error;

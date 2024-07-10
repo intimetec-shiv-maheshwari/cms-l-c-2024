@@ -3,12 +3,14 @@ import { getInput } from ".";
 import { Socket } from "socket.io-client";
 import client from "../../client";
 import { mealType } from "../interface/Menu";
+import { questions } from "../constants/detailedFeedbackQuestion";
 // import { client } from "../../client";
 // import { getUserDetails } from "../../client";
 export class EmployeeHandler {
   socket: Socket;
   recommendedMenu: any;
   itemsForFeedback: any;
+  discardItemList: any;
   constructor(socket: Socket) {
     this.socket = socket;
   }
@@ -42,6 +44,18 @@ export class EmployeeHandler {
       this.socket.on("Get items for feedback", async (response) => {
         console.log("here in event", response);
         this.itemsForFeedback = response;
+        resolve();
+      });
+    });
+  }
+
+  async showDiscardItemList() {
+    await new Promise<void>((resolve) => {
+      this.socket.emit("Get Discard Item List");
+      this.socket.on("Get Discard Item List", async (response) => {
+        console.log(response)
+        this.discardItemList = response;
+        console.table(this.discardItemList);
         resolve();
       });
     });
@@ -133,6 +147,36 @@ export class EmployeeHandler {
     };
   }
 
+  async askForDetailedFeedback() {
+    if (await this.checkUserAlreadyGivenFeedback(client.getUserDetails().id)) {
+      await this.showDiscardItemList();
+      const itemId = parseInt(await getInput("Enter the item id : "));
+      if (this.isItemIdPresentInDiscardList(itemId)) {
+        const dislikes = await getInput(questions[0]);
+        const likes = await getInput(questions[1]);
+        const recipe = await getInput(questions[2]);
+        return {
+          success: true,
+          body: {
+            userId: client.getUserDetails().id,
+            itemId: itemId,
+            dislikes: dislikes,
+            likes: likes,
+            momsRecipe: recipe,
+          },
+        };
+      } else {
+        console.log("Enter a valid item id");
+        await this.askForDetailedFeedback();
+      }
+    } else {
+      return {
+        success: false,
+        message: "You have already provided detailed feedback in last 30 days!",
+      };
+    }
+  }
+
   validateUniqueItems(items: { [key: string]: number[] }): boolean {
     const allItems = new Set<number>();
 
@@ -175,13 +219,36 @@ export class EmployeeHandler {
     );
   }
 
+  isItemIdPresentInDiscardList(itemId: number): boolean {
+    console.log(this.discardItemList);
+    return this.discardItemList.some(
+      (item: { itemId: string }) => parseInt(item.itemId) === itemId
+    );
+  }
+
+  async checkUserAlreadyGivenFeedback(userId: string) {
+    let hasGivenFeedback: boolean = false;
+    await new Promise<void>((resolve) => {
+      this.socket.emit("Check User already provided detailed feedback", userId);
+      this.socket.on(
+        "Check User already provided detailed feedback",
+        async (response) => {
+          hasGivenFeedback = response.result;
+          resolve();
+        }
+      );
+    });
+    return hasGivenFeedback;
+  }
+
   getOptionFunction(option: number): () => void {
     const optionsMap: {
       [key: number]: (requestPayload?: any) => any;
     } = {
       1: this.voteForMeal,
       2: this.provideFeedback,
-      3: this.viewNotification,
+      3: this.askForDetailedFeedback,
+      4: this.viewNotification,
     };
     return optionsMap[option];
   }
