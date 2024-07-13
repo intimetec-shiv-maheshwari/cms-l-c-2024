@@ -4,6 +4,10 @@ import menuRepository from "../repository/menuRepository";
 import { mealType } from "../interface/Menu";
 import { error } from "console";
 import notificationService from "./notificationService";
+import {
+  NotificationType,
+  receiverStatusCode,
+} from "../constants/appConstants";
 
 class MenuService {
   async saveItemsForRecommendation(items: { [key: string]: number[] }) {
@@ -29,13 +33,11 @@ class MenuService {
           throw new Error(`Invalid meal type: ${mealType}`);
         }
       }
-      const notificationDetails = {
-        message: `Chef has rolled out Items for next day menu!`,
-        notificationType: 3,
-        receiverStatusCode: 1,
-      };
+      const notificationmessage = `Chef has rolled out Items for next day menu!`;
       const notificationResult = await notificationService.saveNewNotification(
-        notificationDetails
+        notificationmessage,
+        NotificationType["Recommendation Of Next Day Menu"],
+        receiverStatusCode.Employee
       );
       return {
         success: true,
@@ -85,9 +87,10 @@ class MenuService {
     }
   }
 
-  async displayRecommendedMenu() {
+  async displayRecommendedMenu(userId: string) {
     try {
-      const result = await menuRepository.getRecommendedMeal();
+      const result = await menuRepository.getRecommendedMeal(userId);
+      console.log(result);
       return { success: true, response: result, type: "Item" };
     } catch (error) {
       return { success: false, message: error, type: "error" };

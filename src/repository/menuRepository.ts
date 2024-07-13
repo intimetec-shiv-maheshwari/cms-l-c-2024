@@ -34,13 +34,15 @@ class MenuRepository {
     }
   }
 
-  async getRecommendedMeal() {
+  async getRecommendedMeal(userId: string) {
     try {
       const query =
-        "select t_menu_item.id as id ,t_meal_type.id as mealTypeId, t_menu_item.name as Name,t_meal_type.mealType as Mealtype from t_menu_item INNER JOIN t_recommendation ON t_recommendation.itemId = t_menu_item.id INNER JOIN t_meal_type ON t_recommendation.mealTypeId = t_meal_type.id where t_recommendation.dateOfRecommendation = current_date()";
+        "select t_menu_item.id as id ,t_meal_type.id as mealTypeId, t_menu_item.name as Name,t_meal_type.mealType as Mealtype from t_menu_item INNER JOIN t_recommendation ON t_recommendation.itemId = t_menu_item.id INNER JOIN t_meal_type ON t_recommendation.mealTypeId = t_meal_type.id INNER JOIN t_user_preferences ON t_user_preferences.userId = '6c1020ad-258f-11ef-9c49-a8b13b6fdd90' where t_recommendation.dateOfRecommendation = current_date() ORDER BY CASE WHEN t_menu_item.dietType = t_user_preferences.diet_preference THEN 0 ELSE 1 END,CASE WHEN t_menu_item.cuisineType = t_user_preferences.cuisine_preference THEN 0 ELSE 1 END, CASE WHEN t_menu_item.spiceLevel = t_user_preferences.spice_level THEN 0 ELSE 1 END,CASE WHEN t_menu_item.isSweet = t_user_preferences.hasSweetTooth THEN 0 ELSE 1 END;";
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
-        query
+        query,
+        [userId]
       );
+      console.log(result);
       return result;
     } catch (error) {
       throw new Error("There was some problem in fetching the result");

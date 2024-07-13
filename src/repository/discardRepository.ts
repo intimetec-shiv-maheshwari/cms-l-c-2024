@@ -1,6 +1,7 @@
 import { query } from "express";
 import pool from "./databaseConnector";
 import { FieldPacket, RowDataPacket } from "mysql2";
+import { actionType } from "../constants/appConstants";
 
 class DiscardRepository {
   async checkForUsageHistory(actionType: number) {
@@ -11,7 +12,6 @@ class DiscardRepository {
         query,
         [actionType]
       );
-      console.log(result[0]);
       return result[0];
     } catch (error) {
       throw error;
@@ -84,7 +84,6 @@ class DiscardRepository {
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
         query
       );
-      console.log(result);
       return result;
     } catch (error) {
       throw error;
@@ -115,9 +114,9 @@ class DiscardRepository {
 
   async insertUsageLogForEmployee(userId: string) {
     try {
-      const actionType = 3;
+      const action = actionType["Provide Detailed Feedback"];
       const query = "CALL InsertUsageLogForEmployee(?, ?)";
-      const values = [userId, actionType];
+      const values = [userId, action];
       const result = await pool.execute(query, values);
       return result;
     } catch (error) {

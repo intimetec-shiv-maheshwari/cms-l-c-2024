@@ -26,7 +26,7 @@ export class Admin implements Role {
     return response;
   }
 
-  async deleteMenuItem(requestPayload: Item) {
+  async deleteMenuItem(requestPayload: string) {
     console.log(requestPayload);
     const response = await itemService.deleteItem(requestPayload);
     return response;

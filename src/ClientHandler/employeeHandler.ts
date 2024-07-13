@@ -27,9 +27,9 @@ export class EmployeeHandler {
     return hasUserVoted;
   }
 
-  async getRecommendedMeal() {
+  async getRecommendedMeal(userId: string) {
     await new Promise<void>((resolve) => {
-      this.socket.emit("Recommended Meal");
+      this.socket.emit("Recommended Meal", userId);
       this.socket.on("Recommended Meal", async (response) => {
         this.recommendedMenu = response.response;
         console.table(response.response);
@@ -53,7 +53,7 @@ export class EmployeeHandler {
     await new Promise<void>((resolve) => {
       this.socket.emit("Get Discard Item List");
       this.socket.on("Get Discard Item List", async (response) => {
-        console.log(response)
+        console.log(response);
         this.discardItemList = response;
         console.table(this.discardItemList);
         resolve();
@@ -66,7 +66,7 @@ export class EmployeeHandler {
       client.getUserDetails().id
     );
     if (!hasUserVoted) {
-      await this.getRecommendedMeal();
+      await this.getRecommendedMeal(client.getUserDetails().id);
       if (this.recommendedMenu.length > 0) {
         const breakfastItems = [];
         const lunchItems = [];

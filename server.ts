@@ -62,8 +62,9 @@ io.on("connection", (socket: Socket) => {
     socket.emit("Menu For Recommendation", menu);
   });
 
-  socket.on("Recommended Meal", async () => {
-    const response = await menuService.displayRecommendedMenu();
+  socket.on("Recommended Meal", async (userId: string) => {
+    const response = await menuService.displayRecommendedMenu(userId);
+    console.log(response);
     socket.emit("Recommended Meal", response);
   });
 
@@ -102,8 +103,8 @@ io.on("connection", (socket: Socket) => {
     socket.emit("View Low Rating Items", response);
   });
 
-  socket.on("Check for usage history", async (selectedOption: number) => {
-    const response = await discardService.checkForUsageHistory(selectedOption);
+  socket.on("Check for usage history", async (actionType: number) => {
+    const response = await discardService.checkForUsageHistory(actionType);
     socket.emit("Check for usage history", response);
   });
 
