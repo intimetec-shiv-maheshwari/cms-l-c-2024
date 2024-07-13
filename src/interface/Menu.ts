@@ -18,3 +18,9 @@ export interface Item {
   categoryId?: number;
   availabilityStatus?: boolean;
 }
+
+export interface Notification {
+  message: string;
+  notificationType: number;
+  receiverStatusCode: number;
+}

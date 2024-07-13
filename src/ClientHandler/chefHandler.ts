@@ -3,6 +3,7 @@ import { getInput } from ".";
 import viewResponse from "../utils/displayResponse";
 import { mealType } from "../interface/Menu";
 import client from "../../client";
+import { actionType } from "../constants/appConstants";
 
 export class ChefHandler {
   socket: Socket;
@@ -212,17 +213,17 @@ export class ChefHandler {
     return {
       success: true,
       body: {
-        selectedOption: option,
+        actionType: option,
         itemId: itemId,
         userId: client.getUserDetails().id,
       },
     };
   }
 
-  async checkIfAlreadyUsed(selectedOption: number) {
+  async checkIfAlreadyUsed(actionType: number) {
     let isUsed: boolean = false;
     await new Promise<void>((resolve) => {
-      this.socket.emit("Check for usage history", selectedOption);
+      this.socket.emit("Check for usage history", actionType);
       this.socket.on("Check for usage history", async (response) => {
         console.log(response);
         isUsed = response.result;

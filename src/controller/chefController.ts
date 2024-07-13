@@ -1,3 +1,4 @@
+import { actionType } from "../constants/appConstants";
 import { Role } from "../interface/User";
 import { chefOptions } from "../interface/optionMapping";
 import discardService from "../service/discardService";
@@ -62,20 +63,22 @@ export class Chef implements Role {
   }
 
   async viewDiscardMenuItemList(requestPayload: {
-    selectedOption: number;
+    actionType: number;
     itemId: number;
     userId: string;
   }) {
     try {
-      if (requestPayload.selectedOption === 1) {
+      if (requestPayload.actionType === actionType["Discard Item"]) {
         const result = await itemService.deleteItemById(requestPayload.itemId);
-      } else if (requestPayload.selectedOption === 2) {
+      } else if (
+        requestPayload.actionType === actionType["Ask for Detailed Feedback"]
+      ) {
         const result = await discardService.insertDiscardFeedbackItem(
           requestPayload.itemId
         );
       }
       const usageLog = await discardService.insertUsageLog(
-        requestPayload.selectedOption,
+        requestPayload.actionType,
         requestPayload.userId
       );
       return {

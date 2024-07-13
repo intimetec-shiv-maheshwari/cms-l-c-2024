@@ -23,20 +23,10 @@ class ItemRepository {
 
   async updatePrice(item: Item) {
     const { name, price } = item;
-
-    const checkResult = await this.checkItemExists(name!);
-    if (!checkResult.success) {
-      throw checkResult.message;
-    }
-
-    const updateQuery = "UPDATE t_menu_item SET price = ? WHERE name = ?";
-    const updateValues = [price, name];
-
+    const query = "UPDATE t_menu_item SET price = ? WHERE name = ?";
+    const values = [price, name];
     try {
-      const [result] = await pool.query<ResultSetHeader>(
-        updateQuery,
-        updateValues
-      );
+      const [result] = await pool.query<ResultSetHeader>(query, values);
       return result;
     } catch (error) {
       throw error;
@@ -45,34 +35,22 @@ class ItemRepository {
 
   async updateAvailibilityStatus(item: Item) {
     const { name, availabilityStatus } = item;
-    const checkResult = await this.checkItemExists(name!);
-    if (!checkResult.success) {
-      throw checkResult.message;
-    }
-    const updateQuery =
+    const query =
       "UPDATE t_menu_item SET availabilityStatus = ? WHERE name = ?";
-    const updateValues = [availabilityStatus, name];
+    const values = [availabilityStatus, name];
     try {
-      const [result] = await pool.query<ResultSetHeader>(
-        updateQuery,
-        updateValues
-      );
+      const [result] = await pool.query<ResultSetHeader>(query, values);
       return result;
     } catch (error) {
       throw error;
     }
   }
 
-  async deleteItem(itemName: Item) {
-    const { name } = itemName;
-    const checkResult = await this.checkItemExists(name!);
-    if (!checkResult.success) {
-      throw checkResult.message;
-    }
-    const deleteQuery = "DELETE FROM t_menu_item WHERE name = ?";
-    const deleteValues = [name];
+  async deleteItem(itemName: string) {
+    const query = "DELETE FROM t_menu_item WHERE name = ?";
+    const values = [itemName];
     try {
-      const [result] = await pool.query(deleteQuery, deleteValues);
+      const [result] = await pool.query(query, values);
       return result;
     } catch (error) {
       throw error;
@@ -129,31 +107,14 @@ class ItemRepository {
   }
 
   async checkItemExists(name: string) {
-    const checkQuery =
-      "SELECT COUNT(*) AS count FROM t_menu_item WHERE name = ?";
-    const checkValues = [name];
-
+    const query = "SELECT COUNT(*) AS count FROM t_menu_item WHERE name = ?";
+    const values = [name];
     try {
-      const [rows] = await pool.query<RowDataPacket[]>(checkQuery, checkValues);
-      const count = rows[0].count;
-      if (count === 0) {
-        return {
-          success: false,
-          message: `Item with name '${name}' does not exist.`,
-          type: "error",
-        };
-      }
-      return {
-        success: true,
-        message: `Item with name '${name}' exists.`,
-        type: "success",
-      };
+      const [rows] = await pool.query<RowDataPacket[]>(query, values);
+      return rows[0].length;
+      return;
     } catch (error) {
-      return {
-        success: false,
-        message: "There was an error checking the item existence",
-        type: "error",
-      };
+      throw error;
     }
   }
 

@@ -1,16 +1,22 @@
 import { error } from "console";
 import notificationRepository from "../repository/notificationRepository";
+import { FieldPacket, QueryResult } from "mysql2";
+import { Notification } from "../interface/Menu";
 
 class NotificationService {
-  async saveNewNotification(notificationDetails: {
-    message: string;
-    notificationType: number;
-    receiverStatusCode: number;
-  }) {
+  async saveNewNotification(
+    notificationMessage: string,
+    notificationType: number,
+    receiverStatusCode: number
+  ) {
+    const notificationDetails = {
+      message: notificationMessage,
+      notificationType: notificationType,
+      receiverStatusCode: receiverStatusCode,
+    };
     try {
-      const result = await notificationRepository.insertNewNotification(
-        notificationDetails
-      );
+      const result: [QueryResult, FieldPacket[]] =
+        await notificationRepository.insertNewNotification(notificationDetails);
       return result;
     } catch (error) {
       throw error;
@@ -19,7 +25,9 @@ class NotificationService {
 
   async getNotifications(receiverStatusCode: number) {
     try {
-      const result = await notificationRepository.getNotifications(receiverStatusCode);
+      const result = await notificationRepository.getNotifications(
+        receiverStatusCode
+      );
       return result;
     } catch (error) {
       throw error;

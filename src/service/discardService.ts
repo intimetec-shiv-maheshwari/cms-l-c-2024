@@ -1,10 +1,14 @@
+import {
+  NotificationType,
+  receiverStatusCode,
+} from "../constants/appConstants";
 import discardRepository from "../repository/discardRepository";
 import notificationService from "./notificationService";
 
 class DiscardService {
-  async checkForUsageHistory(option: number) {
+  async checkForUsageHistory(actionType: number) {
     try {
-      const response = await discardRepository.checkForUsageHistory(option);
+      const response = await discardRepository.checkForUsageHistory(actionType);
       return response;
     } catch (error) {
       return error;
@@ -63,13 +67,11 @@ class DiscardService {
       const response = await discardRepository.insertDiscardFeedbackItem(
         itemId
       );
-      const notificationDetails = {
-        message: `We are trying to improve your experience with the food.Please provide your feedback by giving detailed feedback and help us.`,
-        notificationType: 4,
-        receiverStatusCode: 1,
-      };
+      const notificationMessage = `We are trying to improve your experience with the food.Please provide your feedback by giving detailed feedback and help us.`;
       const notificationResult = await notificationService.saveNewNotification(
-        notificationDetails
+        notificationMessage,
+        NotificationType["Detailed Feedback for Discard Menu Item"],
+        receiverStatusCode.Employee
       );
       return response;
     } catch (error) {
