@@ -1,12 +1,8 @@
+import { ItemFeedback } from "../interface/feedback";
 import pool from "./databaseConnector";
 
 class FeedbackRepository {
-  async insertFeedback(feedbackDetails: {
-    userId: any;
-    itemId: any;
-    rating: any;
-    feedback: any;
-  }) {
+  async insertFeedback(feedbackDetails: ItemFeedback) {
     try {
       const { userId, itemId, rating, feedback } = feedbackDetails;
       const query =

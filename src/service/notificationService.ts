@@ -28,9 +28,17 @@ class NotificationService {
       const result = await notificationRepository.getNotifications(
         receiverStatusCode
       );
-      return result;
+      return {
+        success: true,
+        message: result,
+        type: "list",
+      };
     } catch (error) {
-      throw error;
+      return {
+        success: false,
+        message: error,
+        type: "message",
+      };
     }
   }
 }

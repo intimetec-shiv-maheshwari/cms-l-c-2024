@@ -58,18 +58,20 @@ class MenuService {
       ][]) {
         const mealTypeId = mealType[meal];
         const itemId = ids[0];
-        try {
-          const response = await menuRepository.increaseVote(
-            mealTypeId,
-            itemId
-          );
-        } catch (error) {
-          throw `Failed to increment vote for ${meal}`;
-        }
+        const response = await menuRepository.increaseVote(mealTypeId, itemId);
       }
       await menuRepository.insertVotingRecord(payload.userId);
+      return {
+        success: true,
+        message: "Voting Done Successfully!",
+        type: "message",
+      };
     } catch (error) {
-      throw error;
+      return {
+        success: false,
+        message: error,
+        type: "message",
+      };
     }
   }
 
@@ -109,9 +111,17 @@ class MenuService {
           await menuRepository.insertItemForFinalMenu(itemId, mealTypeId);
         }
       }
-      return "Operation performed successfully!";
+      return {
+        success: true,
+        message: "Operation performed successfully!",
+        type: "message",
+      };
     } catch (error) {
-      throw error;
+      return {
+        success: false,
+        message: error,
+        type: "message",
+      };
     }
   }
 

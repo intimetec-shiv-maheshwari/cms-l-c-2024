@@ -1,7 +1,8 @@
+import { ItemFeedback } from "../interface/feedback";
 import feedbackRepository from "../repository/feedbackRepository";
 
 class FeedbackSerice {
-  async saveFeedback(feedbackDetails: any) {
+  async saveFeedback(feedbackDetails: ItemFeedback) {
     try {
       const response = await feedbackRepository.insertFeedback(feedbackDetails);
       return response;

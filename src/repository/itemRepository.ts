@@ -99,7 +99,6 @@ class ItemRepository {
       const [result]: [RowDataPacket[], FieldPacket[]] = await pool.query(
         query
       );
-      console.log(result);
       return result;
     } catch (error) {
       throw error;
