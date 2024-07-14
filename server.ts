@@ -70,6 +70,7 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("Get Recommended Meal Status", async () => {
     const response = await menuService.viewRecommendedMenuStatus();
+    console.log("here in get", response);
     socket.emit("Get Recommended Meal Status", response);
   });
 

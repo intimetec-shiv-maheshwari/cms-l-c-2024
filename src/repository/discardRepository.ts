@@ -2,6 +2,7 @@ import { query } from "express";
 import pool from "./databaseConnector";
 import { FieldPacket, RowDataPacket } from "mysql2";
 import { actionType } from "../constants/appConstants";
+import { DetailedFeedback } from "../interface/feedback";
 
 class DiscardRepository {
   async checkForUsageHistory(actionType: number) {
@@ -90,12 +91,7 @@ class DiscardRepository {
     }
   }
 
-  async saveDetailedFeedbackForDiscardItem(feedbackDetails: {
-    itemId: any;
-    likes: any;
-    dislikes: any;
-    momsRecipe: any;
-  }) {
+  async saveDetailedFeedbackForDiscardItem(feedbackDetails: DetailedFeedback) {
     try {
       const { itemId, likes, dislikes, momsRecipe } = feedbackDetails;
       const query =

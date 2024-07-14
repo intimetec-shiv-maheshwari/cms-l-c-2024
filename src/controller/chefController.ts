@@ -26,40 +26,16 @@ export class Chef implements Role {
   generateFeedbackReport() {}
 
   async savefinalisedMenu(requestPayload: any) {
-    try {
-      const response = await menuService.finaliseMenu(requestPayload);
-      return {
-        success: true,
-        message: response,
-        type: "message",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error,
-        type: "message",
-      };
-    }
+    const response = await menuService.finaliseMenu(requestPayload);
+    return response;
   }
 
   async viewNotifications() {
-    try {
-      const receiverStatusCode = 2;
-      const result = await notificationService.getNotifications(
-        receiverStatusCode
-      );
-      return {
-        success: true,
-        message: result,
-        type: "list",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error,
-        type: "message",
-      };
-    }
+    const receiverStatusCode = 2;
+    const result = await notificationService.getNotifications(
+      receiverStatusCode
+    );
+    return result;
   }
 
   async viewDiscardMenuItemList(requestPayload: {

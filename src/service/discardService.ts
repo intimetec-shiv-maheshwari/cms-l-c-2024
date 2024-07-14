@@ -2,6 +2,7 @@ import {
   NotificationType,
   receiverStatusCode,
 } from "../constants/appConstants";
+import { DetailedFeedback } from "../interface/feedback";
 import discardRepository from "../repository/discardRepository";
 import notificationService from "./notificationService";
 
@@ -46,12 +47,7 @@ class DiscardService {
     }
   }
 
-  async saveDetailedFeedbackForDiscardItem(feedbackDetails: {
-    itemId: any;
-    likes: any;
-    dislikes: any;
-    momsRecipe: any;
-  }) {
+  async saveDetailedFeedbackForDiscardItem(feedbackDetails: DetailedFeedback) {
     try {
       const response =
         await discardRepository.saveDetailedFeedbackForDiscardItem(

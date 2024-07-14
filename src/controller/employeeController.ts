@@ -1,5 +1,6 @@
 import sentimentAnalysis from "../SentimentAnalysis/sentimentAnalysis";
 import { Role } from "../interface/User";
+import { DetailedFeedback, ItemFeedback } from "../interface/feedback";
 import { employeeOptions } from "../interface/optionMapping";
 import discardService from "../service/discardService";
 import feedbackService from "../service/feedbackService";
@@ -11,23 +12,11 @@ export class Employee implements Role {
     return employeeOptions;
   }
   async voteForDesiredMeal(requestPayload: any) {
-    try {
-      const response = await menuService.incrementVoteForMeal(requestPayload);
-      return {
-        success: true,
-        message: "Voting Done Successfully!",
-        type: "message",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error,
-        type: "message",
-      };
-    }
+    const response = await menuService.incrementVoteForMeal(requestPayload);
+    return response;
   }
 
-  async saveFeedback(requestPayload: any) {
+  async saveFeedback(requestPayload: ItemFeedback) {
     try {
       const feedbackResponse = await feedbackService.saveFeedback(
         requestPayload
@@ -58,32 +47,14 @@ export class Employee implements Role {
   }
 
   async viewNotification() {
-    try {
-      const receiverStatusCode = 1;
-      const result = await notificationService.getNotifications(
-        receiverStatusCode
-      );
-      return {
-        success: true,
-        message: result,
-        type: "list",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error,
-        type: "message",
-      };
-    }
+    const receiverStatusCode = 1;
+    const result = await notificationService.getNotifications(
+      receiverStatusCode
+    );
+    return result;
   }
 
-  async saveDetailedFeedback(requestPayload: {
-    userId: string;
-    itemId: any;
-    likes: any;
-    dislikes: any;
-    momsRecipe: any;
-  }) {
+  async saveDetailedFeedback(requestPayload: DetailedFeedback) {
     try {
       const { itemId, likes, dislikes, momsRecipe, userId } = requestPayload;
       const feedbackDetails = {
@@ -95,10 +66,10 @@ export class Employee implements Role {
       const response = await discardService.saveDetailedFeedbackForDiscardItem(
         feedbackDetails
       );
-      const usageLog = await discardService.insertUsageLogForEmployee(userId);
+      const usageLog = await discardService.insertUsageLogForEmployee(userId!);
       return {
         success: true,
-        message: "Operaion Done Successfully!",
+        message: "Operation Done Successfully!",
         type: "message",
       };
     } catch (error) {
