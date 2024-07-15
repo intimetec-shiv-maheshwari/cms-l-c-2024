@@ -1,5 +1,5 @@
 import { ItemFeedback } from "../interface/feedback";
-import pool from "./databaseConnector";
+import pool from "../config/databaseConnector";
 
 class FeedbackRepository {
   async insertFeedback(feedbackDetails: ItemFeedback) {

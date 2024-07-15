@@ -4,7 +4,7 @@ import { Chef } from "../controller/chefController";
 import { Employee } from "../controller/employeeController";
 import { User } from "../controller/userController";
 import { Role, UserCredentials } from "../interface/User";
-import pool from "../repository/databaseConnector";
+import pool from "../config/databaseConnector";
 import roleService from "./roleService";
 import userRepository from "../repository/userRepository";
 

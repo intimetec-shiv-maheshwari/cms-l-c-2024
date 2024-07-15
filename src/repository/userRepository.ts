@@ -1,6 +1,6 @@
 import { FieldPacket, RowDataPacket } from "mysql2";
 import { UserCredentials } from "../interface/User";
-import pool from "./databaseConnector";
+import pool from "../config/databaseConnector";
 
 class UserRepository {
   async verifyUser(userCredentials: UserCredentials) {

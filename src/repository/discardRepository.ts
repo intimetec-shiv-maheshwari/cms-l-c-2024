@@ -1,5 +1,5 @@
 import { query } from "express";
-import pool from "./databaseConnector";
+import pool from "../config/databaseConnector";
 import { FieldPacket, RowDataPacket } from "mysql2";
 import { actionType } from "../constants/appConstants";
 import { DetailedFeedback } from "../interface/feedback";

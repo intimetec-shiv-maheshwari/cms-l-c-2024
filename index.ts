@@ -4,7 +4,6 @@ import client from "./client";
 import viewResponse from "./src/utils/displayResponse";
 
 const socket = client.getSocket();
-let userOptions: string | any[] = [];
 socket.on("Authenticate", (result: any) => {
   if (result.success) {
     client.setUserDetails(result.user);
