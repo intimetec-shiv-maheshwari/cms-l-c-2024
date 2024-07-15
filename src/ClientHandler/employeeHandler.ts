@@ -1,11 +1,8 @@
 import { getInput } from ".";
-// import { userDetails } from "../../client";
 import { Socket } from "socket.io-client";
 import client from "../../client";
 import { mealType } from "../interface/Menu";
 import { questions } from "../constants/detailedFeedbackQuestion";
-// import { client } from "../../client";
-// import { getUserDetails } from "../../client";
 export class EmployeeHandler {
   socket: Socket;
   recommendedMenu: any;
@@ -97,8 +94,10 @@ export class EmployeeHandler {
             },
           };
         } else {
-          console.log("Please vote again!");
-          await this.voteForMeal();
+          return {
+            success: false,
+            message: "Please vote again!",
+          };
         }
       } else {
         return {
@@ -135,7 +134,7 @@ export class EmployeeHandler {
     } else {
       return {
         success: false,
-        message: "You have completed your feedback part!",
+        message: "Nothing here as of now!",
       };
     }
   }
@@ -166,8 +165,10 @@ export class EmployeeHandler {
           },
         };
       } else {
-        console.log("Enter a valid item id");
-        await this.askForDetailedFeedback();
+        return {
+          success: false,
+          message: "Enter a valid item id",
+        };
       }
     } else {
       return {

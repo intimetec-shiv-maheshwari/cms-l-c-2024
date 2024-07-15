@@ -110,8 +110,10 @@ export class AdminHandler {
         };
       }
     } else {
-      console.log("Enter a valid option!");
-      await this.viewDiscardMenuItemList();
+      return {
+        success: false,
+        message: "Enter a valid option!",
+      };
     }
     return {
       success: true,
