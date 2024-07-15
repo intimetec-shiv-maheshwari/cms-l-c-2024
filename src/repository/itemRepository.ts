@@ -5,7 +5,7 @@ import {
   RowDataPacket,
 } from "mysql2";
 import { Item } from "../interface/Menu";
-import pool from "./databaseConnector";
+import pool from "../config/databaseConnector";
 
 class ItemRepository {
   async addNewItem(item: Item) {

@@ -1,5 +1,5 @@
 import { Notification } from "../interface/Menu";
-import pool from "./databaseConnector";
+import pool from "../config/databaseConnector";
 
 class NotificationRepository {
   async insertNewNotification(notificationDetails: Notification) {

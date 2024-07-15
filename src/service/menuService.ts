@@ -1,5 +1,5 @@
 import { RowDataPacket } from "mysql2/promise";
-import pool from "../repository/databaseConnector";
+import pool from "../config/databaseConnector";
 import menuRepository from "../repository/menuRepository";
 import { mealType } from "../interface/Menu";
 import { error } from "console";

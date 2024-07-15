@@ -1,5 +1,5 @@
 import { FieldPacket, RowDataPacket } from "mysql2";
-import pool from "./databaseConnector";
+import pool from "../config/databaseConnector";
 import { query } from "express";
 import { error } from "console";
 

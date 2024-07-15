@@ -1,4 +1,4 @@
-import pool from "../repository/databaseConnector";
+import pool from "../config/databaseConnector";
 import userRepository from "../repository/userRepository";
 
 class RoleService {
