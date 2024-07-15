@@ -84,7 +84,7 @@ class Client {
     return this.userOptions;
   }
 
-  async displayUserOptions(options: string | any[]) {
+  async displayUserOptions(options: string[]) {
     for (let i = 0; i < options.length; i++) {
       console.log(`${i + 1}. ${options[i]}`);
     }
