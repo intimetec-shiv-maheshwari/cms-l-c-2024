@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { Constants } from "./src/constants/appConstants";
 import { exit } from "process";
 import { AdminHandler } from "./src/ClientHandler/adminHandler";
-import { getInput } from "./src/ClientHandler";
+import { getInput } from "./src/utils/inputHandler";
 import { ChefHandler } from "./src/ClientHandler/chefHandler";
 import { EmployeeHandler } from "./src/ClientHandler/employeeHandler";
 

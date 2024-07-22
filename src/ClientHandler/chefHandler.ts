@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { getInput } from ".";
+import { getInput } from "../utils/inputHandler";
 import viewResponse from "../utils/displayResponse";
 import { mealType } from "../interface/Menu";
 import client from "../../client";

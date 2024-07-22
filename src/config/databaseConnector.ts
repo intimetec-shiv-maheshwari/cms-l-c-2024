@@ -1,14 +1,14 @@
 import * as mysql from "mysql2/promise";
+import { dbConfig } from "./dbConfig";
 
-// Create a connection pool
 const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "cafeteriams",
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  host: dbConfig.host,
+  user: dbConfig.user,
+  password: dbConfig.password,
+  database: dbConfig.database,
+  waitForConnections: dbConfig.waitForConnections,
+  connectionLimit: dbConfig.connectionLimit,
+  queueLimit: dbConfig.queueLimit,
 });
 
-export default pool
+export default pool;
