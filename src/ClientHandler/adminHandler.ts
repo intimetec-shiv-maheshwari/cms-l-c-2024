@@ -1,5 +1,5 @@
 // import * as readline from "readline";
-import { getInput } from ".";
+import { getInput } from "../utils/inputHandler";
 import client from "../../client";
 import { Item, mealType } from "../interface/Menu";
 import { Socket } from "socket.io-client";

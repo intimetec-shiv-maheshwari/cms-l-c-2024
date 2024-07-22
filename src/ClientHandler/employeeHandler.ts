@@ -1,4 +1,4 @@
-import { getInput } from ".";
+import { getInput } from "../utils/inputHandler";
 import { Socket } from "socket.io-client";
 import client from "../../client";
 import { mealType } from "../interface/Menu";

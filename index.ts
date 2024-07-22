@@ -27,7 +27,9 @@ socket.on("Option Selection", async (response: any) => {
   } else if (response.type === "Item") {
     viewResponse(response.response);
   } else if (response.type === "list") {
-    console.log(response.message);
+    response.message.forEach((message: any) => {
+      console.log(message.message)
+    });
   }
   await client.displayUserOptions(client.getUserOptions());
   await client.promptOptionSelection(
