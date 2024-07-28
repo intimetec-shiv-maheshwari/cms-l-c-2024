@@ -140,7 +140,6 @@ export class AdminHandler {
     await new Promise<void>((resolve) => {
       this.socket.emit("Check for usage history", selectedOption);
       this.socket.on("Check for usage history", async (response) => {
-        console.log(response);
         isUsed = response.result;
         resolve();
       });

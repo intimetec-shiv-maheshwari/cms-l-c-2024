@@ -78,11 +78,11 @@ class ItemService {
     }
   }
 
-  async deleteItem(itemName: string) {
+  async deleteItem(item: Item) {
     try {
-      const count = await itemRepository.checkItemExists(itemName);
+      const count = await itemRepository.checkItemExists(item.name!);
       if (count > 0) {
-        const result = await itemRepository.deleteItem(itemName);
+        const result = await itemRepository.deleteItem(item.name!);
         return {
           success: true,
           message: "Item Deleted Successfully!",

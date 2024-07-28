@@ -110,8 +110,7 @@ class ItemRepository {
     const values = [name];
     try {
       const [rows] = await pool.query<RowDataPacket[]>(query, values);
-      return rows[0].length;
-      return;
+      return rows[0].count;
     } catch (error) {
       throw error;
     }

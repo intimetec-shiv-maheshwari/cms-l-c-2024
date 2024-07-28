@@ -39,7 +39,6 @@ export class EmployeeHandler {
     await new Promise<void>((resolve) => {
       this.socket.emit("Get items for feedback", userId);
       this.socket.on("Get items for feedback", async (response) => {
-        console.log("here in event", response);
         this.itemsForFeedback = response;
         resolve();
       });
